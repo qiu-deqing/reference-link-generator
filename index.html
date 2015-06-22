@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>reference link generator</title>
+</head>
+<body>
+
+  <style>
+  html {
+    box-sizing: border-box;
+  }
+  * {
+    box-sizing: inherit;
+  }
+
+  @font-face {
+  font-family: 'iconfont';
+  src: url('//at.alicdn.com/t/font_1434948855_4083986.eot'); /* IE9*/
+  src: url('//at.alicdn.com/t/font_1434948855_4083986.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('//at.alicdn.com/t/font_1434948855_4083986.woff') format('woff'), /* chrome、firefox */
+  url('//at.alicdn.com/t/font_1434948855_4083986.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+  url('//at.alicdn.com/t/font_1434948855_4083986.svg#iconfont') format('svg'); /* iOS 4.1- */
+  }
+  .iconfont{
+      font-family: "iconfont";
+      font-size: 16px;
+      font-style: normal;
+      font-weight: normal;
+      font-variant: normal;
+      display: inline-block;
+      speak: none;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+  }
+  .icon-down::before {
+    content: "\e600";
+  }
+
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .link-input {
+    width: 100%;
+    height: 150px;
+  }
+  .trigger {
+    text-align: center;
+    height: 40px;
+    line-height: 40px;
+    background: springgreen;
+    cursor: pointer;
+    position: relative;
+  }
+  .trigger .tip {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    display: block;
+    opacity: 0;
+    transition: opacity 3s ease-out;
+  }
+  .trigger .show {
+    opacity: 1;
+  }
+  .result {
+    list-style: none;
+    margin: 0;
+    padding: 10px;
+    min-height: 100px;
+    word-break: break-all;
+    border: 1px solid #ddd;
+  }
+  </style>
+
+  <div class="container">
+    <h2>将markdown引用链接输入到下面文本框中，自动转换为地址列表格式，方便markdown文章最后添加参考链接。</h2>
+    <textarea class="link-input" cols="30" rows="10">
+[10]: https://github.com/gabrielecirulli/2048/blob/master/js/keyboard_input_manager.js
+[9]: https://github.com/gabrielecirulli/2048
+[8]: https://github.com/Wolfy87/EventEmitter
+[7]: https://github.com/component/emitter
+    </textarea>
+    <div class="trigger">
+      <i class="iconfont icon-down"></i>生成列表
+      <span class="tip">结果已复制到剪切版</span>
+    </div>
+    <ul class="result">
+    </ul>
+  </div>
+
+  <script>
+  var input = document.querySelector('.link-input');
+  var trigger = document.querySelector('.trigger');
+  var result = document.querySelector('.result');
+  var tip = document.querySelector('.trigger .tip');
+
+  // 将输入的文本转化为耽搁链接字符串数组
+  function transform(origin) {
+    if (typeof origin !== 'string') {
+      return;
+    }
+    var items = origin.split(/\r?\n/).filter(function (d) {
+      return !!d;
+    });
+
+    var generated = items.map(function (d) {
+      d = d.trim();
+      return d.replace(/\[([^\]]+)\]:\s*(\S*)/, '- [$2][$1]');
+    });
+
+    return generated;
+  }
+
+  function showTip() {
+    tip.classList.add('show');
+  }
+  function hideTip() {
+    tip.classList.remove('show');
+  }
+
+  // 从input获取输入，转化并显示在输出
+  function onGenerate() {
+    var origin = input.value;
+    var generated = transform(origin);
+    var items = generated.map(function (d) {
+      return '<li>' + d + '</li>';
+    });
+    result.innerHTML = items.join('');
+    hideTip();
+  }
+
+
+  // 选中输出结果文本
+  function onSelectResult() {
+    var range = document.createRange();
+    range.selectNode(result);
+    window.getSelection().addRange(range);
+  }
+
+  // 尝试自动复制选中文本到剪切版
+  function onCopyToClipboard() {
+    try {
+      // now that we've selected the anchor text, execute the copy command
+      var successful = document.execCommand('copy');
+      showTip();
+    } catch (erro) {
+    }
+  }
+
+
+  input.addEventListener('input', onGenerate, false);
+  trigger.addEventListener('click', onGenerate, false);
+
+
+  result.addEventListener('click', function (e) {
+    onSelectResult();
+    onCopyToClipboard();
+  }, false);
+
+  </script>
+
+</body>
+</html>
