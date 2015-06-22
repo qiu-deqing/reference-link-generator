@@ -132,6 +132,7 @@
   }
 
 
+
   // 选中输出结果文本
   function onSelectResult() {
     var range = document.createRange();
@@ -149,7 +150,13 @@
     }
   }
 
-
+  input.addEventListener('focus', function () {
+    input.select();
+    input.onmouseup = function () {
+      input.onmouseup = null;
+      return false;
+    };
+  }, false);
   input.addEventListener('input', onGenerate, false);
   trigger.addEventListener('click', onGenerate, false);
 
