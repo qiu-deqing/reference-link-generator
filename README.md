@@ -3,5 +3,7 @@
 
 将markdown引用链接输入到下面文本框中，自动转换为地址列表格式，方便markdown文章最后添加参考链接。
 
-[http://qiudeqing.com/reference-link-generator]()
+[http://qiudeqing.com/reference-link-generator][1]
+
+[1]: http://qiudeqing.com/reference-link-generator/
 
